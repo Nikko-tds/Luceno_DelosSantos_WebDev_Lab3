@@ -18,7 +18,7 @@ A Node.js/TypeScript backend using Express and PostgreSQL (`pg`) to manage custo
 
 2. **Set up the database**
    - Create a PostgreSQL database (e.g. `ecommerce`) using pgAdmin or any client.
-   - Run the SQL setup script from the lab spec to create and populate the tables.
+   - Run `setup.sql` (included in this repo) against your database to create and populate the tables.
 
 3. **Create a `.env` file** in the project root:
 
