@@ -55,26 +55,6 @@ router.post("/", async (req: Request, res: Response) => {
   }
 });
 
-router.put("/:id", async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const { product_name, category, unit_price }: Product = req.body;
-  try {
-    const result = await pool.query<Product>(
-      `UPDATE product
-      SET product_name = $1, category = $2, unit_price = $3
-      WHERE product_id = $4
-      RETURNING *`,
-      [product_name, category, unit_price, id]
-    );
-    if (result.rows.length === 0) {
-      return res.status(404).json({ error: "Product not found" });
-    }
-    res.json(result.rows[0]);
-  } catch (error) {
-    res.status(500).json({ error: (error as Error).message });
-  }
-});
-
 router.patch("/:id/price", async (req: Request, res: Response) => {
   const { id } = req.params;
   const { unit_price } = req.body;
@@ -86,24 +66,6 @@ router.patch("/:id/price", async (req: Request, res: Response) => {
       WHERE product_id = $2
       RETURNING *`,
       [unit_price, id]
-    );
-    if (result.rows.length === 0) {
-      return res.status(404).json({ error: "Product not found" });
-    }
-    res.json(result.rows[0]);
-  } catch (error) {
-    res.status(500).json({ error: (error as Error).message });
-  }
-});
-
-router.delete("/:id", async (req: Request, res: Response) => {
-  const { id } = req.params;
-  try {
-    const result = await pool.query<Product>(
-      `DELETE FROM product
-      WHERE product_id = $1
-      RETURNING *`,
-      [id]
     );
     if (result.rows.length === 0) {
       return res.status(404).json({ error: "Product not found" });
