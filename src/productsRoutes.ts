@@ -5,10 +5,19 @@ import { Product } from "./types";
 const router = Router();
 
 router.get("/", async (req: Request, res: Response) => {
+  const { category } = req.query;
   try {
-    const result = await pool.query<Product>(
-      "SELECT * FROM product ORDER BY product_id ASC"
-    );
+    let result;
+    if (category) {
+      result = await pool.query<Product>(
+        "SELECT * FROM product WHERE category = $1 ORDER BY product_id ASC",
+        [category]
+      );
+    } else {
+      result = await pool.query<Product>(
+        "SELECT * FROM product ORDER BY product_id ASC"
+      );
+    }
     res.json(result.rows);
   } catch (error) {
     res.status(500).json({ error: (error as Error).message });
@@ -66,17 +75,9 @@ router.put("/:id", async (req: Request, res: Response) => {
   }
 });
 
-router.patch("/:id/price", async (req: Request<{ id: string }, {}, { unit_price: number }>, res: Response) => {
+router.patch("/:id/price", async (req: Request, res: Response) => {
   const { id } = req.params;
   const { unit_price } = req.body;
-
-  if (typeof unit_price !== 'number' || Number.isNaN(unit_price)) {
-    return res.status(400).json({ error: "Field 'unit_price' must be a valid number" });
-  }
-
-  if (unit_price < 0) {
-    return res.status(400).json({ error: "Price cannot be negative" });
-  }
 
   try {
     const result = await pool.query<Product>(
